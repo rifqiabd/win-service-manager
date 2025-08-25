@@ -1,0 +1,28 @@
+display:
+  services_per_page: 20
+  show_descriptions: true
+  show_dependencies: false
+  show_process_ids: true
+  theme: "dark"
+  refresh_interval: 5
+
+logging:
+  level: "info"
+  file: ""
+  enable_console: true
+  max_size: 10
+  max_backups: 3
+
+services:
+  default_filter: "all"
+  default_sort: "name"
+  show_system_services: true
+  hidden_services: []
+  favorite_services: []
+
+behavior:
+  confirm_stop: true
+  confirm_restart: true
+  auto_refresh: true
+  remember_layout: false
+  show_help: true

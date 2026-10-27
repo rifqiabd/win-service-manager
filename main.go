@@ -268,7 +268,7 @@ REQUIREMENTS:
     - Windows operating system
     - Administrator privileges (recommended for full functionality)
 
-For more information, visit: https://github.com/rifqiabd/win-service-manager
+For more information, visit: https://github.com/sv222/win-service-manager
 `, AppName, AppVersion)
 }
 

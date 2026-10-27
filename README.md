@@ -41,7 +41,7 @@ Windows Service Manager is a powerful TUI (Terminal User Interface) replacement 
 
 ```bash
 # Clone the repository
-git clone https://github.com/rifqiabd/win-service-manager.git
+git clone https://github.com/sv222/win-service-manager.git
 cd win-service-manager
 
 # Build the executable

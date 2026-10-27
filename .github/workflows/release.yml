@@ -24,7 +24,7 @@ jobs:
           cache: true
 
       - name: Verify Windows build
-        run: GOOS=windows GOARCH=amd64 go build ./...
+        run: GOOS=windows GOARCH=amd64 go build -o /tmp/win-service-manager.exe .
 
       - name: Publish GitHub release
         uses: goreleaser/goreleaser-action@v6

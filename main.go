@@ -16,9 +16,10 @@ import (
 )
 
 const (
-	AppName    = "Windows Service Manager"
-	AppVersion = "1.0.0"
+	AppName = "Windows Service Manager"
 )
+
+var AppVersion = "dev"
 
 var (
 	configPath  = flag.String("config", "", "Path to configuration file")
@@ -267,7 +268,7 @@ REQUIREMENTS:
     - Windows operating system
     - Administrator privileges (recommended for full functionality)
 
-For more information, visit: https://github.com/your-username/win-service-manager
+For more information, visit: https://github.com/rifqiabd/win-service-manager
 `, AppName, AppVersion)
 }
 

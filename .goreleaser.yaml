@@ -1,0 +1,35 @@
+version: 2
+
+project_name: win-service-manager
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: win-service-manager
+    main: .
+    binary: win-service-manager
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w -X main.AppVersion={{ .Version }}
+
+archives:
+  - id: win-service-manager
+    builds:
+      - win-service-manager
+    formats:
+      - zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+
+release:
+  draft: false
+  prerelease: auto

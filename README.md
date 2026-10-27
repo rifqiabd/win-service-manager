@@ -41,11 +41,38 @@ Windows Service Manager is a powerful TUI (Terminal User Interface) replacement 
 
 ```bash
 # Clone the repository
-git clone https://github.com/sv222/win-service-manager.git
+git clone https://github.com/rifqiabd/win-service-manager.git
 cd win-service-manager
 
 # Build the executable
 go build -o win-service-manager.exe .
+```
+
+### Scoop
+
+After the release manifest has been published to a Scoop bucket:
+
+```powershell
+scoop install win-service-manager
+win-service-manager -version
+```
+
+To update or remove the application:
+
+```powershell
+scoop update win-service-manager
+scoop uninstall win-service-manager
+```
+
+The application is portable and does not install a Windows service. Run the terminal as Administrator when you need to start, stop, or reconfigure services.
+
+### Creating a Release
+
+Create and push a semantic version tag from the fork repository. GitHub Actions builds a Windows amd64 ZIP archive and publishes it as a GitHub Release.
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ### Usage

@@ -71,13 +71,13 @@ The application is portable and does not install a Windows service. On startup i
 Create and push a semantic version tag from the fork repository. GitHub Actions builds a Windows amd64 ZIP archive and publishes it as a GitHub Release.
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.1.0
+git push origin v1.1.0
 ```
 
 ### Usage
 ```bash
-# Run with default settings
+# Run with default settings (prompts for UAC)
 .\win-service-manager.exe
 
 # Use custom configuration

@@ -10,6 +10,8 @@
 
 Windows Service Manager is a powerful TUI (Terminal User Interface) replacement for the traditional Windows Services management console (`services.msc`). Built with Go and the elegant Bubble Tea framework, it provides a modern, keyboard-driven interface for managing Windows services efficiently.
 
+![Windows Service Manager TUI — lazydocker-style layout](docs/screenshoot.png)
+
 ## ✨ Features
 
 ### 🎯 Core Service Management

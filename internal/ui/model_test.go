@@ -100,3 +100,20 @@ func TestStatusPreservedOnRefresh(t *testing.T) {
 		t.Fatalf("selection was not preserved after refresh")
 	}
 }
+
+func TestSearchModeSurvivesRefresh(t *testing.T) {
+	m := testModel(100, 30)
+	m.enterSearch()
+	for _, char := range "audio" {
+		m.handleSearchKeys(runeKey(string(char)))
+	}
+
+	m.Update(ServicesRefreshedMsg{Services: append([]service.ServiceInfo(nil), m.services...)})
+
+	if m.state != StateSearch {
+		t.Fatalf("state = %v, want StateSearch", m.state)
+	}
+	if len(m.filteredServices) != 1 || m.filteredServices[0].Name != "Audiosrv" {
+		t.Fatalf("search results were not preserved: %#v", m.filteredServices)
+	}
+}

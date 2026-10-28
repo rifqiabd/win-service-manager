@@ -206,7 +206,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.clampSelection()
 		m.ensureVisible()
-		m.state = StateServiceList
+		if m.state == StateLoading || m.state == StateError {
+			m.state = StateServiceList
+		}
 		m.lastRefresh = time.Now()
 		return m, nil
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -8,7 +9,7 @@ import (
 	"path/filepath"
 
 	"win-service-manager/internal/config"
-
+	"win-service-manager/internal/elevate"
 	"win-service-manager/internal/service"
 	"win-service-manager/internal/ui"
 
@@ -26,6 +27,7 @@ var (
 	logLevel    = flag.String("log-level", "", "Log level (debug, info, warn, error)")
 	showVersion = flag.Bool("version", false, "Show version information")
 	showHelp    = flag.Bool("help", false, "Show help information")
+	noElevate   = flag.Bool("no-elevate", false, "Do not request administrator privileges via UAC")
 )
 
 func main() {
@@ -41,6 +43,25 @@ func main() {
 	if *showHelp {
 		printHelp()
 		os.Exit(0)
+	}
+
+	// Request administrator privileges through UAC before starting the TUI.
+	// Version/help output is intentionally handled above so scripts do not
+	// trigger a UAC prompt.
+	elevated := elevate.IsElevated()
+	if !elevated && !*noElevate {
+		fmt.Fprintln(os.Stderr, "Requesting administrator privileges (UAC)...")
+		if err := elevate.RelaunchElevated(); err != nil {
+			if errors.Is(err, elevate.ErrCancelled) {
+				fmt.Fprintln(os.Stderr, "Administrator privileges are required to manage services.")
+				fmt.Fprintln(os.Stderr, "Use -no-elevate to browse services without elevation.")
+			} else {
+				fmt.Fprintf(os.Stderr, "Failed to request administrator privileges: %v\n", err)
+			}
+			os.Exit(1)
+		}
+		// The elevated instance is now running in its own console.
+		return
 	}
 
 	// Load configuration
@@ -87,6 +108,7 @@ func main() {
 
 	// Create Bubble Tea model
 	model := ui.NewModel(cfg, serviceManager, logger)
+	model.SetElevated(elevated)
 
 	// Setup Bubble Tea program options
 	var opts []tea.ProgramOption
@@ -221,33 +243,43 @@ OPTIONS:
     -help
         Show this help information and exit
 
+    -no-elevate
+        Do not request administrator privileges via UAC
+        (the TUI still opens, but service changes may fail)
+
+ELEVATION:
+    By default the app requests administrator privileges through the
+    Windows UAC prompt on startup. Version/help output never triggers UAC.
+
 KEYBOARD SHORTCUTS:
     Navigation:
         j/↓         Move down
         k/↑         Move up
-        g           Go to top
-        G           Go to bottom
-        n/PgDn      Next page
-        p/PgUp      Previous page
+        g/G         Go to top/bottom
+        n/p         Page down/up
+        Tab         Switch focus (services <-> filters)
+        ←/→         Switch focus (services <-> filters)
+        1-6         Jump to filter
 
     Actions:
-        Enter       View service details
+        Enter       Open service details
         s           Start selected service
-        t           Stop selected service (direct)
-        m           Change startup type (direct)
+        t           Stop selected service
+        m           Change startup type
 
     View Options:
         w/F5        Refresh services list
-        f           Cycle filter (All/Running/Stopped/Manual/Disabled/Automatic)
-        h/?         Toggle help panel
+        f           Cycle filter
+        /           Search services
+        h/?         Toggle help
+        Esc         Back / clear search
 
     Other:
-        Esc         Go back (from details view)
         q/Ctrl+C    Quit application
 
 CONFIGURATION:
     The application uses a YAML configuration file that controls:
-    - Display settings (theme, refresh interval, services per page)
+    - Display settings (theme, refresh interval)
     - Logging configuration (level, file output)
     - Service management defaults
     - Behavior settings (confirmation dialogs, auto-refresh)
@@ -255,20 +287,23 @@ CONFIGURATION:
     If no configuration file exists, a default one will be created.
 
 EXAMPLES:
-    # Run with default settings
+    # Run with default settings (prompts for UAC)
     win-service-manager
 
     # Use custom config file
     win-service-manager -config myconfig.yaml
+
+    # Browse without elevation
+    win-service-manager -no-elevate
 
     # Enable debug logging
     win-service-manager -log-level debug
 
 REQUIREMENTS:
     - Windows operating system
-    - Administrator privileges (recommended for full functionality)
+    - Administrator privileges for service changes (requested automatically)
 
-For more information, visit: https://github.com/sv222/win-service-manager
+For more information, visit: https://github.com/rifqiabd/win-service-manager
 `, AppName, AppVersion)
 }
 
